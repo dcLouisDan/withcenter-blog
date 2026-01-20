@@ -18,10 +18,10 @@ export async function AuthButton() {
       <div>
         Hey,{" "}
         <Link href="/profile" className="font-bold">
-          {profile ? profile.username : user.email}
+          {profile ? profile.username : user.email}!
         </Link>
       </div>
-      !
+
       <LogoutButton />
     </div>
   ) : (

@@ -194,6 +194,7 @@ export function SimpleEditor({
 }) {
   const isMobile = useIsBreakpoint();
   const { height } = useWindowSize();
+  const [inFocus, setInFocus] = useState(false);
   const [mobileView, setMobileView] = useState<"main" | "highlighter" | "link">(
     "main",
   );
@@ -245,6 +246,8 @@ export function SimpleEditor({
       if (!editable) return;
       dispatch(setBody(json));
     },
+    onFocus: () => setInFocus(true),
+    onBlur: () => setInFocus(false),
   });
 
   const rect = useCursorVisibility({
@@ -260,7 +263,11 @@ export function SimpleEditor({
 
   return (
     <div
-      className={cn("simple-editor-wrapper", editable && "border rounded-lg")}
+      className={cn(
+        "simple-editor-wrapper transition-all duration-150 ease-in-out",
+        editable && "border rounded-lg",
+        inFocus && "border-foreground/80",
+      )}
     >
       <EditorContext.Provider value={{ editor }}>
         {editable && (
