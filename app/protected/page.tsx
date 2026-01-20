@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { InfoIcon } from "lucide-react";
 import { FetchDataSteps } from "@/components/tutorial/fetch-data-steps";
 import { Suspense } from "react";
+import UserDetailsForm from "@/components/user-details-form";
+import { getUserProfile } from "@/lib/supabase/profile";
 
 async function UserDetails() {
   const supabase = await createClient();
@@ -13,6 +15,7 @@ async function UserDetails() {
     redirect("/auth/login");
   }
 
+  await getUserProfile();
   return JSON.stringify(data.claims, null, 2);
 }
 
@@ -35,8 +38,7 @@ export default function ProtectedPage() {
         </pre>
       </div>
       <div>
-        <h2 className="font-bold text-2xl mb-4">Next steps</h2>
-        <FetchDataSteps />
+        <UserDetailsForm />
       </div>
     </div>
   );
