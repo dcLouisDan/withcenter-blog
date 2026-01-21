@@ -1,3 +1,9 @@
+import BlogsList from "@/components/blogs-list";
+
 export default function BlogsPage() {
-  return <div>BlogsPage</div>;
+  return (
+    <div>
+      <BlogsList />
+    </div>
+  );
 }

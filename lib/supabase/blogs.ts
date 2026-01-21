@@ -1,3 +1,5 @@
+"use server";
+
 import { Blog, BlogsFetchAPIParams, BlogsFetchParams } from "./../types/blog";
 import { BlogsFetchResponse } from "../types/blog";
 import { createClient } from "./client";
@@ -55,7 +57,7 @@ export const fetchPaginatedBlogs = cache(
     }
 
     const limit = size ?? 10;
-    const from = page ? page * limit : 0;
+    const from = page ? (page - 1) * limit : 0;
     const to = from + limit - 1;
 
     const { data, error, count } = await query

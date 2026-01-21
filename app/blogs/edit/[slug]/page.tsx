@@ -1,8 +1,7 @@
-"use server";
-import { SimpleEditor } from "@/components/tiptap-templates/simple/simple-editor";
 import { createClient } from "@/lib/supabase/server";
 import { createClientPublic } from "@/lib/supabase/public-server";
 import { Suspense } from "react";
+import BlogForm from "@/components/blog-form";
 
 export async function generateStaticParams() {
   const supabase = await createClientPublic();
@@ -19,24 +18,27 @@ export async function generateStaticParams() {
   }));
 }
 
-export default async function BlogViewPage({
+export default async function BlogEditPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
-
   return (
     <div>
-      <div>BlogViewPage</div>
+      <div>Edit Blog</div>
       <Suspense>
-        <BlogContent slug={slug} />
+        <BlogFormComponent params={params} />
       </Suspense>
     </div>
   );
 }
 
-async function BlogContent({ slug }: { slug: string }) {
+async function BlogFormComponent({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
   const supabase = await createClient();
   const { data } = await supabase
     .from("blogs")
@@ -51,10 +53,12 @@ async function BlogContent({ slug }: { slug: string }) {
 
   return (
     <div>
-      <h1>{data.title}</h1>
-      <div>
-        <SimpleEditor content={data.body} editable={false} />
-      </div>
+      <BlogForm
+        action="update"
+        initialBody={data.body}
+        initialTitle={data.title}
+        slugOrig={slug}
+      />
     </div>
   );
 }

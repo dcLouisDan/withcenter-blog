@@ -1,6 +1,6 @@
 import { createAppSlice } from "@/lib/createAppSlice";
 import type { AppThunk } from "@/lib/store";
-import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSelector, type PayloadAction } from "@reduxjs/toolkit";
 import {
   Blog,
   BlogsFetchParams,
@@ -83,15 +83,11 @@ export const blogsSlice = createAppSlice({
     selectBlogs: (state) => state.blogs,
     selectIsLoading: (state) => state.isLoading,
     selectError: (state) => state.error,
-    selectSort: (state) => ({
-      sort: state.sort,
-      sort_direction: state.sort_direction,
-    }),
-    selectPagination: (state) => ({
-      page: state.page,
-      limit: state.limit,
-      total: state.total,
-    }),
+    selectPage: (state) => state.page,
+    selectLimit: (state) => state.limit,
+    selectSort: (state) => state.sort,
+    selectSortDirection: (state) => state.sort_direction,
+    selectTotal: (state) => state.total,
   },
 });
 
@@ -108,7 +104,23 @@ export const {
 export const {
   selectBlogs,
   selectIsLoading,
-  selectPagination,
-  selectSort,
   selectError,
+  selectPage,
+  selectLimit,
+  selectSort,
+  selectSortDirection,
+  selectTotal,
 } = blogsSlice.selectors;
+
+export const selectPagination = createSelector(
+  [selectPage, selectLimit, selectTotal, selectSort, selectSortDirection],
+  (page, limit, total, sort, sort_direction) => {
+    return {
+      page,
+      limit,
+      total,
+      sort,
+      sort_direction,
+    };
+  },
+);

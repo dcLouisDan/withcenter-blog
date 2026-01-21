@@ -9,9 +9,9 @@ import {
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import Link from "next/link";
 import { useEffect } from "react";
-import { Spinner } from "../ui/spinner";
+import { Spinner } from "./ui/spinner";
 
-export default function ProfileBlogsList({ auth_id }: { auth_id: string }) {
+export default function BlogsList() {
   const dispatch = useAppDispatch();
   const loading = useAppSelector(selectIsLoading);
   const blogs = useAppSelector(selectBlogs);
@@ -24,15 +24,14 @@ export default function ProfileBlogsList({ auth_id }: { auth_id: string }) {
     const { page, limit, sort, sort_direction } = pagination;
     dispatch(
       fetchBlogs({
-        author_id: auth_id,
         page,
         limit,
         sort,
         sort_direction,
+        published: true,
       }),
     );
   }, [
-    auth_id,
     pagination.page,
     pagination.limit,
     pagination.total,

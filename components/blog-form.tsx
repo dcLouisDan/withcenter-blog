@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 import { SimpleEditor } from "./tiptap-templates/simple/simple-editor";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -17,10 +17,17 @@ import {
 import { titleToSlug } from "@/lib/string-utils";
 import { type BlogForm } from "@/lib/types/blog";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function BlogForm({
   initialBody,
+  initialTitle,
+  slugOrig,
+  action = "create",
 }: {
+  action?: "create" | "update";
+  slugOrig?: string;
+  initialTitle?: string;
   initialBody: Record<string, any>;
 }) {
   const dispatch = useAppDispatch();
@@ -29,6 +36,7 @@ export default function BlogForm({
   const slug = useMemo(() => titleToSlug(title), [title]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -41,18 +49,35 @@ export default function BlogForm({
     };
     const supabase = createClient();
     try {
-      const { error } = await supabase
-        .from("blogs")
-        .insert([blogData])
-        .select();
-      if (error) throw error;
-      toast.success("Blog Saved");
+      if (action == "create") {
+        const { error } = await supabase
+          .from("blogs")
+          .insert([blogData])
+          .select();
+        if (error) throw error;
+        toast.success("Blog Saved");
+        router.push(`/blogs/${slug}`);
+      } else if (action == "update") {
+        if (!slugOrig) throw new Error("The original slug was not provided.");
+
+        const { error } = await supabase
+          .from("blogs")
+          .update(blogData)
+          .eq("slug", slugOrig);
+        if (error) throw error;
+        toast.success("Blog Updated");
+        router.push(`/blogs/${slug}`);
+      }
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (action == "update" && !!initialTitle) dispatch(setTitle(initialTitle));
+  }, [initialTitle, action]);
   return (
     <form onSubmit={handleSubmit}>
       <div className="grid gap-4">
