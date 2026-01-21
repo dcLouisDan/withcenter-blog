@@ -1,5 +1,3 @@
-"use server";
-
 import { Blog, BlogsFetchAPIParams, BlogsFetchParams } from "./../types/blog";
 import { BlogsFetchResponse } from "../types/blog";
 import { createClient } from "./client";
@@ -16,11 +14,47 @@ const defaultParams: BlogsFetchAPIParams = {
   archived: false,
 };
 
+export async function publishBlog(id: string) {
+  const supabase = createClient();
+  const dateNow = new Date().toISOString();
+  return supabase
+    .from("blogs")
+    .update({
+      published_at: dateNow,
+      updated_at: dateNow,
+    })
+    .eq("id", id);
+}
+
+export async function archiveBlog(id: string) {
+  const supabase = createClient();
+  const dateNow = new Date().toISOString();
+  return supabase
+    .from("blogs")
+    .update({
+      archived_at: dateNow,
+      updated_at: dateNow,
+    })
+    .eq("id", id);
+}
+
+export async function unarchiveBlog(id: string) {
+  const supabase = createClient();
+  const dateNow = new Date().toISOString();
+  return supabase
+    .from("blogs")
+    .update({
+      archived_at: null,
+      updated_at: dateNow,
+    })
+    .eq("id", id);
+}
+
 export const fetchPaginatedBlogs = cache(
   async (params?: BlogsFetchParams): Promise<BlogsFetchResponse> => {
     const supabase = createClient();
     const query = supabase.from("blogs").select(
-      `id, slug, title, body, created_at, published_at, author:author_id!inner (
+      `id, slug, title, body, created_at, published_at, archived_at, author:author_id!inner (
       username, first_name, last_name)`,
       { count: "exact" },
     );
@@ -45,11 +79,11 @@ export const fetchPaginatedBlogs = cache(
     }
 
     if (published) {
-      query.neq("published_at", null);
+      query.not("published_at", "is", null);
     }
 
     if (unpublished) {
-      query.eq("published_at", null);
+      query.is("published_at", null);
     }
 
     if (archived) {

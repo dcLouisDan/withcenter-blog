@@ -1,34 +1,33 @@
 import NewProfileDialog from "@/components/dialogs/new-profile-dialog";
 import ProfileBlogsList from "@/components/profile/profile-blogs-list";
 import { buttonVariants } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { getUserProfile } from "@/lib/supabase/profile";
-import { createClient } from "@/lib/supabase/server";
-import { Plus } from "lucide-react";
+import { PenBox } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
 export default async function ProfilePage() {
   return (
     <div className="grid gap-2">
-      <div>Welcome to you profile</div>
       <Suspense>
         <CheckProfile />
       </Suspense>
-      <div>
+      <div className="flex justify-between items-center gap-4">
+        <div className="text-lg">My Posts</div>
         <Link
           href="/profile/blog-create"
           className={buttonVariants({
             variant: "default",
           })}
         >
-          <Plus /> Compose Blog
+          <PenBox /> Compose Blog
         </Link>
       </div>
-      <div>
-        <Suspense>
-          <BlogList />
-        </Suspense>
-      </div>
+      <Separator />
+      <Suspense>
+        <BlogList />
+      </Suspense>
     </div>
   );
 }
