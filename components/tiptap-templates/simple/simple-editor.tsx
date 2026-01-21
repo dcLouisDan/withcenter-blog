@@ -299,7 +299,7 @@ export function SimpleEditor({
         <EditorContent
           editor={editor}
           role="presentation"
-          className="simple-editor-content"
+          className={editable ? "simple-editor-content" : ""}
         />
       </EditorContext.Provider>
     </div>

@@ -13,7 +13,6 @@ export default function ProtectedLayout({
         <div className="flex-1 flex flex-col w-full max-w-5xl p-5">
           {children}
         </div>
-
         <AppFooter />
       </div>
     </main>

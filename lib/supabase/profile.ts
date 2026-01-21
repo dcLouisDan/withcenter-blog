@@ -22,5 +22,5 @@ export async function getUserProfile(): Promise<null | UserProfile> {
     return null;
   }
   const profile = data[0] as UserProfile;
-  return profile;
+  return { ...profile, id };
 }

@@ -71,6 +71,7 @@ export default function BlogForm({
             <SimpleEditor content={initialBody} editable />
           </Suspense>
         </div>
+        {error && <p className="text-sm text-red-500">{error}</p>}
         <div className="flex justify-end gap-4">
           <Button type="submit" className="" disabled={isLoading}>
             {isLoading ? (

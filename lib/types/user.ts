@@ -5,7 +5,7 @@ export interface UserDataForm {
 }
 
 export interface UserProfile {
-  id: string;
+  id?: string;
   username: string;
   first_name: string;
   last_name: string;
