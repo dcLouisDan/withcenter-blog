@@ -11,8 +11,16 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { PER_PAGE_DEFAULT } from "@/lib/constants";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
+import { BasicSelect, BasicSelectItem } from "./basic-select";
+
+const PAGE_SIZE_OPTIONS: BasicSelectItem[] = [1, 10, 20, 50, 100].map(
+  (num) => ({
+    label: num.toString(),
+    value: num.toString(),
+  }),
+);
 
 export function PaginationBar({
   total = 0,
@@ -23,13 +31,16 @@ export function PaginationBar({
   page?: number;
   size?: number;
 }) {
+  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const createQueryString = useCallback(
-    (name: string, value: string) => {
+    (values: { name: string; value: string }[]) => {
       const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
+      values.forEach(({ name, value }) => {
+        params.set(name, value);
+      });
 
       return params.toString();
     },
@@ -38,10 +49,32 @@ export function PaginationBar({
 
   const createPageLinkString = useCallback(
     (page: number) => {
-      return pathname + "?" + createQueryString("page", page.toString());
+      return (
+        pathname +
+        "?" +
+        createQueryString([{ name: "page", value: page.toString() }])
+      );
     },
     [pathname],
   );
+
+  const handlePageSizeChange = (value: string) => {
+    const queryString =
+      pathname +
+      "?" +
+      createQueryString([
+        {
+          name: "perPage",
+          value: value,
+        },
+        {
+          name: "page",
+          value: "1",
+        },
+      ]);
+
+    router.push(queryString);
+  };
 
   const { pages, isFirstPage, isLastPage, nextPage, prevPage, lastPage } =
     useMemo(() => {
@@ -64,43 +97,52 @@ export function PaginationBar({
     }, [page, total, size]);
 
   return (
-    <Pagination>
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationFirst
-            href={createPageLinkString(1)}
-            disabled={isFirstPage}
-          />
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationPrevious
-            href={createPageLinkString(prevPage)}
-            disabled={isFirstPage}
-          />
-        </PaginationItem>
-        {pages.map((pageNumber) => (
-          <PaginationItem key={pageNumber}>
-            <PaginationLink
-              isActive={pageNumber == page}
-              href={createPageLinkString(pageNumber)}
-            >
-              {pageNumber}
-            </PaginationLink>
+    <div className="flex items-center justify-end">
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationFirst
+              href={createPageLinkString(1)}
+              disabled={isFirstPage}
+            />
           </PaginationItem>
-        ))}
-        <PaginationItem>
-          <PaginationNext
-            disabled={isLastPage}
-            href={createPageLinkString(nextPage)}
-          />
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLast
-            disabled={isLastPage}
-            href={createPageLinkString(lastPage)}
-          />
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
+          <PaginationItem>
+            <PaginationPrevious
+              href={createPageLinkString(prevPage)}
+              disabled={isFirstPage}
+            />
+          </PaginationItem>
+          {pages.map((pageNumber) => (
+            <PaginationItem key={pageNumber}>
+              <PaginationLink
+                isActive={pageNumber == page}
+                href={createPageLinkString(pageNumber)}
+              >
+                {pageNumber}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+          <PaginationItem>
+            <PaginationNext
+              disabled={isLastPage}
+              href={createPageLinkString(nextPage)}
+            />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLast
+              disabled={isLastPage}
+              href={createPageLinkString(lastPage)}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+      <div>
+        <BasicSelect
+          items={PAGE_SIZE_OPTIONS}
+          value={size ? size.toString() : PER_PAGE_DEFAULT.toString()}
+          onValueChange={handlePageSizeChange}
+        />
+      </div>
+    </div>
   );
 }

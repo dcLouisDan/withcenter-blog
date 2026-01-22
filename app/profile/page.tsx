@@ -14,7 +14,7 @@ export default async function ProfilePage() {
         <CheckProfile />
       </Suspense>
       <div className="flex justify-between items-center gap-4">
-        <div className="text-lg">My Posts</div>
+        <div className="text-2xl">My Posts</div>
         <Link
           href="/profile/blog-create"
           className={buttonVariants({

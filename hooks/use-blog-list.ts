@@ -8,9 +8,14 @@ import {
 } from "@/lib/blogs/blogs-slice";
 import { PER_PAGE_DEFAULT } from "@/lib/constants";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { BlogsFetchParams } from "@/lib/types/blog";
 import { useSearchParams } from "next/navigation";
 import { useCallback } from "react";
-export default function useProfileBlogList(auth_id: string) {
+
+export default function useBlogList(
+  auth_id?: string,
+  customParams?: BlogsFetchParams,
+) {
   const dispatch = useAppDispatch();
   const loading = useAppSelector(selectIsLoading);
   const blogs = useAppSelector(selectBlogs);
@@ -24,14 +29,17 @@ export default function useProfileBlogList(auth_id: string) {
     ? Number(searchParams.get("perPage"))
     : PER_PAGE_DEFAULT;
 
+  console.log(limit);
+
   const refreshData = useCallback(() => {
     dispatch(
       fetchBlogs({
         author_id: auth_id,
         page,
-        limit,
+        limit: customParams?.limit ?? limit,
         sort,
         sort_direction,
+        published: !auth_id,
       }),
     );
   }, [auth_id, page, limit, total, sort, sort_direction]);

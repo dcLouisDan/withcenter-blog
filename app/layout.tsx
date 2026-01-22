@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { StoreProvider } from "./store-provider";
 import { Toaster } from "sonner";
+import { APP_NAME } from "@/lib/constants";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -11,8 +12,9 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: APP_NAME,
+  description:
+    "Blog site made as an assessment project for Withcenter Inc. Korea",
 };
 
 const geistSans = Geist({

@@ -1,4 +1,11 @@
-export const APP_NAME = "WITHCENTER BLOG";
+import { DM_Serif_Text } from "next/font/google";
+
+export const fontLogo = DM_Serif_Text({
+  variable: "--font-logo",
+  weight: ["400"],
+});
+
+export const APP_NAME = process.env.NEXT_APP_NAME ?? "WITHCENTER BLOG";
 
 export const INITIAL_TIPTAP_CONTENT: Record<string, any> = {
   "type": "doc",
@@ -18,6 +25,6 @@ export const INITIAL_TIPTAP_CONTENT: Record<string, any> = {
   ],
 };
 
-export const DATE_FORMAT_TEMPLATE = "MMMM DD, YYYY";
+export const DATE_FORMAT_TEMPLATE = "MMMM DD, YYYY | hh:mm A";
 
 export const PER_PAGE_DEFAULT = 10;

@@ -12,7 +12,7 @@ import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";
 import { ConfirmationDialog } from "../dialogs/confirmation-dialog";
 import { toast } from "sonner";
-import useProfileBlogList from "@/hooks/use-profile-blog-list";
+import useBlogList from "@/hooks/use-blog-list";
 import {
   archiveBlog,
   deleteBlog,
@@ -23,6 +23,7 @@ import { PaginationBar } from "../pagination-bar";
 import { renderToHTMLString } from "@tiptap/static-renderer/pm/html-string";
 import StarterKit from "@tiptap/starter-kit";
 import { truncateString } from "@/lib/string-utils";
+import { Skeleton } from "../ui/skeleton";
 
 export default function ProfileBlogsList({ auth_id }: { auth_id: string }) {
   const {
@@ -35,7 +36,7 @@ export default function ProfileBlogsList({ auth_id }: { auth_id: string }) {
     sort,
     sort_direction,
     total,
-  } = useProfileBlogList(auth_id);
+  } = useBlogList(auth_id);
 
   useEffect(() => {
     console.log("Fetching");
@@ -45,14 +46,11 @@ export default function ProfileBlogsList({ auth_id }: { auth_id: string }) {
   return (
     <div>
       {error && <p className="text-red p-4">{error}</p>}
-      {loading && (
-        <div className="flex items-center justify-center gap-4">
-          <Spinner /> <div>Loading...</div>
-        </div>
-      )}
-      {!loading && (
+      {loading ? (
+        <BlogListSkeleton />
+      ) : (
         <div className="flex flex-col gap-2">
-          <PaginationBar total={total} size={limit} />
+          <PaginationBar total={total} size={limit} page={page} />
           <div className="flex flex-col gap-2">
             {blogs.map((blog) => (
               <ProfileBlogItem auth_id={auth_id} key={blog.id} blog={blog} />
@@ -60,6 +58,17 @@ export default function ProfileBlogsList({ auth_id }: { auth_id: string }) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function BlogListSkeleton() {
+  return (
+    <div className="flex flex-col gap-2">
+      <Skeleton className="w-full h-16" />
+      <Skeleton className="w-full h-20" />
+      <Skeleton className="w-full h-20" />
+      <Skeleton className="w-full h-20" />
     </div>
   );
 }
@@ -75,8 +84,8 @@ function ProfileBlogItem({ blog, auth_id }: { blog: Blog; auth_id: string }) {
     );
   console.log(`${blog.title} - Archived : ${blog.archived_at}`);
   return (
-    <div className="w-full border flex items-center gap-2 rounded-lg p-2 px-4">
-      <div className="flex flex-col gap-1 flex-1">
+    <div className="w-full border flex flex-col sm:flex-row items-center gap-1 sm:gap-2 rounded-lg p-2 px-4">
+      <div className="flex flex-col gap-1 flex-1 w-full">
         <Link
           href={"/blogs/" + blog.slug}
           key={blog.slug}
@@ -91,7 +100,7 @@ function ProfileBlogItem({ blog, auth_id }: { blog: Blog; auth_id: string }) {
         <div className="flex items-center gap-2">{statusBadge}</div>
       </div>
       <Separator orientation="vertical" />
-      <div className="flex flex-col w-50 h-full gap-2">
+      <div className="flex flex-row sm:flex-col w-full sm:w-40 h-full gap-2">
         {!blog.published_at && !blog.archived_at ? (
           <PublishBlogDialog auth_id={auth_id} blog={blog} />
         ) : !blog.archived_at ? (
@@ -118,7 +127,7 @@ function ProfileBlogItem({ blog, auth_id }: { blog: Blog; auth_id: string }) {
 }
 
 function PublishBlogDialog({ blog, auth_id }: { blog: Blog; auth_id: string }) {
-  const { refreshData } = useProfileBlogList(auth_id);
+  const { refreshData } = useBlogList(auth_id);
   const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -138,7 +147,7 @@ function PublishBlogDialog({ blog, auth_id }: { blog: Blog; auth_id: string }) {
       title="Publish Blog"
       description="By pressing continue, your blog will be visible to all of the visitors of this site."
       triggerComponent={
-        <Button size="sm" disabled={isLoading}>
+        <Button size="sm" disabled={isLoading} className="w-full">
           {isLoading ? <Spinner /> : <Book />} Publish
         </Button>
       }
@@ -148,7 +157,7 @@ function PublishBlogDialog({ blog, auth_id }: { blog: Blog; auth_id: string }) {
 }
 
 function ArchiveBlogDialog({ blog, auth_id }: { blog: Blog; auth_id: string }) {
-  const { refreshData } = useProfileBlogList(auth_id);
+  const { refreshData } = useBlogList(auth_id);
   const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -168,7 +177,12 @@ function ArchiveBlogDialog({ blog, auth_id }: { blog: Blog; auth_id: string }) {
       title="Archived Blog"
       description="By pressing continue, your blog will no longer be visible to the visitors of this site."
       triggerComponent={
-        <Button size="sm" disabled={isLoading} variant="outline">
+        <Button
+          size="sm"
+          disabled={isLoading}
+          variant="outline"
+          className="w-full"
+        >
           {isLoading ? <Spinner /> : <Archive />} Archive
         </Button>
       }
@@ -184,7 +198,7 @@ function UnarchiveBlogDialog({
   blog: Blog;
   auth_id: string;
 }) {
-  const { refreshData } = useProfileBlogList(auth_id);
+  const { refreshData } = useBlogList(auth_id);
   const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -204,7 +218,12 @@ function UnarchiveBlogDialog({
       title="Archived Blog"
       description="By pressing continue, your blog will be published again and visible to the visitors of this site."
       triggerComponent={
-        <Button size="sm" disabled={isLoading} variant="secondary">
+        <Button
+          size="sm"
+          disabled={isLoading}
+          variant="secondary"
+          className="w-full"
+        >
           {isLoading ? <Spinner /> : <ArchiveRestore />} Unarchive
         </Button>
       }
@@ -214,7 +233,7 @@ function UnarchiveBlogDialog({
 }
 
 function DeleteBlogDialog({ blog, auth_id }: { blog: Blog; auth_id: string }) {
-  const { refreshData } = useProfileBlogList(auth_id);
+  const { refreshData } = useBlogList(auth_id);
   const [isLoading, setIsLoading] = useState(false);
   const BODY_PREVIEW_LIMIT = 250;
   const handleSubmit = async () => {

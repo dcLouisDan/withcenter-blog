@@ -81,7 +81,7 @@ export default function BlogForm({
   return (
     <form onSubmit={handleSubmit}>
       <div className="grid gap-4">
-        <div className="grid gap-2">
+        <div className="grid gap-4">
           <Label htmlFor="title">Title</Label>
           <Input
             id="title"
@@ -90,7 +90,7 @@ export default function BlogForm({
           />
           <p className="text-muted-foreground text-sm italic">Slug: {slug}</p>
         </div>
-        <div>
+        <div className="grid gap-4">
           <Label>Content</Label>
           <Suspense>
             <SimpleEditor content={initialBody} editable />
