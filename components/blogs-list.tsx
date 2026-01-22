@@ -1,13 +1,15 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useMemo } from "react";
-import { Spinner } from "./ui/spinner";
 import { Blog, BlogsFetchParams } from "@/lib/types/blog";
 import { renderToHTMLString } from "@tiptap/static-renderer/pm/html-string";
-import StarterKit from "@tiptap/starter-kit";
+
 import { truncateString } from "@/lib/string-utils";
 import dayjs from "@/lib/dayjs";
-import { DATE_FORMAT_TEMPLATE } from "@/lib/constants";
+import {
+  DATE_FORMAT_TEMPLATE,
+  TIPTAP_STATIC_RENDERER_EXTENSTIONS,
+} from "@/lib/constants";
 import useBlogList from "@/hooks/use-blog-list";
 import { buttonVariants } from "./ui/button";
 import { BookOpenText } from "lucide-react";
@@ -75,7 +77,7 @@ const TITLE_PREVIEW_LIMIT = 80;
 function BlogListItem({ blog }: { blog: Blog }) {
   const blogBody = useMemo(() => {
     const html = renderToHTMLString({
-      extensions: [StarterKit],
+      extensions: TIPTAP_STATIC_RENDERER_EXTENSTIONS,
       content: blog.body,
     });
 

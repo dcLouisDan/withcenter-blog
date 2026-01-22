@@ -64,9 +64,6 @@ import { useIsBreakpoint } from "@/hooks/use-is-breakpoint";
 import { useWindowSize } from "@/hooks/use-window-size";
 import { useCursorVisibility } from "@/hooks/use-cursor-visibility";
 
-// --- Components ---
-import { ThemeToggle } from "@/components/tiptap-templates/simple/theme-toggle";
-
 // --- Lib ---
 import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils";
 
@@ -141,9 +138,9 @@ const MainToolbarContent = ({
 
       <ToolbarSeparator />
 
-      {/* <ToolbarGroup>
+      <ToolbarGroup>
         <ImageUploadButton text="Add" />
-      </ToolbarGroup> */}
+      </ToolbarGroup>
 
       <Spacer />
 
@@ -206,6 +203,7 @@ export function SimpleEditor({
         autocapitalize: "off",
         "aria-label": "Main content area, start typing to enter text.",
         class: "simple-editor",
+        spellcheck: "off",
       },
     },
     extensions: [
@@ -226,13 +224,13 @@ export function SimpleEditor({
       Superscript,
       Subscript,
       Selection,
-      // ImageUploadNode.configure({
-      //   accept: "image/*",
-      //   maxSize: MAX_FILE_SIZE,
-      //   limit: 3,
-      //   upload: handleImageUpload,
-      //   onError: (error) => console.error("Upload failed:", error),
-      // }),
+      ImageUploadNode.configure({
+        accept: "image/*",
+        maxSize: MAX_FILE_SIZE,
+        limit: 3,
+        upload: handleImageUpload,
+        onError: (error) => console.error("Upload failed:", error),
+      }),
     ],
     content,
     injectCSS: true,

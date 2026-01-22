@@ -42,7 +42,7 @@ export async function AuthButton() {
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="icon" className="sm:hidden">
             <Menu />
           </Button>
         </DropdownMenuTrigger>

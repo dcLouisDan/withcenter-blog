@@ -5,7 +5,10 @@ import { useEffect, useMemo, useState } from "react";
 import { Spinner } from "../ui/spinner";
 import { Blog } from "@/lib/types/blog";
 import dayjs from "dayjs";
-import { DATE_FORMAT_TEMPLATE } from "@/lib/constants";
+import {
+  DATE_FORMAT_TEMPLATE,
+  TIPTAP_STATIC_RENDERER_EXTENSTIONS,
+} from "@/lib/constants";
 import { Button, buttonVariants } from "../ui/button";
 import {
   Archive,
@@ -276,7 +279,7 @@ function DeleteBlogDialog({ blog, auth_id }: { blog: Blog; auth_id: string }) {
 
   const blogBody = useMemo(() => {
     const html = renderToHTMLString({
-      extensions: [StarterKit],
+      extensions: TIPTAP_STATIC_RENDERER_EXTENSTIONS,
       content: blog.body,
     });
 
