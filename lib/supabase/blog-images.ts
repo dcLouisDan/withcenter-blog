@@ -25,5 +25,14 @@ export async function uploadBlogImage(file: File) {
     .from(BLOG_IMAGES_BUCKET)
     .getPublicUrl(filePath);
 
-  return data.publicUrl;
+  return { publicUrl: data.publicUrl, filePath };
+}
+
+export async function deleteBlogImage(filePath: string) {
+  const supabase = createClient();
+  const { error } = await supabase.storage
+    .from(BLOG_IMAGES_BUCKET)
+    .remove([filePath]);
+
+  if (error) throw error;
 }

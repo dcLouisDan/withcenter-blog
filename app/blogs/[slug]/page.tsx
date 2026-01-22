@@ -11,9 +11,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Book, BookText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { getUserProfile } from "@/lib/supabase/profile";
 import { PublishBlogDialog } from "@/components/dialogs/publish-blog.dialog";
+import BlogComments from "@/components/blog-comments";
+import useBlogPost from "@/hooks/use-blog-post";
 
 export async function generateStaticParams() {
   const supabase = await createClientPublic();
@@ -38,10 +39,18 @@ export default async function BlogViewPage({
   const { slug } = await params;
 
   return (
-    <div>
-      <Suspense fallback={<BlogContentSkeleton />}>
-        <BlogContent slug={slug} />
-      </Suspense>
+    <div className="flex gap-4 flex-col md:flex-row">
+      <div className="flex-1">
+        <Suspense fallback={<BlogContentSkeleton />}>
+          <BlogContent slug={slug} />
+        </Suspense>
+      </div>
+
+      <div className="w-full md:w-[350px]">
+        <Suspense>
+          <BlogComments slug={slug} />
+        </Suspense>
+      </div>
     </div>
   );
 }
@@ -60,16 +69,7 @@ function BlogContentSkeleton() {
 }
 
 async function BlogContent({ slug }: { slug: string }) {
-  const supabase = await createClient();
-  const { data: blog } = await supabase
-    .from("blogs")
-    .select(
-      `id, slug, title, body, created_at, published_at, author:author_id!inner (id,
-      username, first_name, last_name)`,
-    )
-    .match({ slug })
-    .single()
-    .overrideTypes<Blog, { merge: false }>();
+  const { blog } = await useBlogPost(slug);
 
   if (!blog) return null;
 

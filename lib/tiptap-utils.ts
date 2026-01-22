@@ -12,7 +12,7 @@ import {
   type Editor,
   type NodeWithPos,
 } from "@tiptap/react";
-import { uploadBlogImage } from "./supabase/blog_images";
+import { uploadBlogImage } from "./supabase/blog-images";
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -378,9 +378,9 @@ export const handleImageUpload = async (
   }
 
   try {
-    const imagePath = await uploadBlogImage(file);
+    const { publicUrl } = await uploadBlogImage(file);
 
-    return imagePath;
+    return publicUrl;
   } catch (error: unknown) {
     throw error;
   }
