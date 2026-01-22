@@ -6,6 +6,9 @@ export const fontLogo = DM_Serif_Text({
 });
 
 export const APP_NAME = process.env.NEXT_APP_NAME ?? "WITHCENTER BLOG";
+export const APP_TAGLINE =
+  process.env.NEXT_APP_TAGLINE ??
+  "A blog about nothing—and everything, where life's randomness is gently written down.";
 
 export const INITIAL_TIPTAP_CONTENT: Record<string, any> = {
   "type": "doc",

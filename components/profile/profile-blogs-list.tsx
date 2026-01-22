@@ -7,7 +7,15 @@ import { Blog } from "@/lib/types/blog";
 import dayjs from "dayjs";
 import { DATE_FORMAT_TEMPLATE } from "@/lib/constants";
 import { Button, buttonVariants } from "../ui/button";
-import { Archive, ArchiveRestore, Book, Edit, Trash2 } from "lucide-react";
+import {
+  Archive,
+  ArchiveRestore,
+  Book,
+  BookOpenText,
+  Edit,
+  PenBox,
+  Trash2,
+} from "lucide-react";
 import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";
 import { ConfirmationDialog } from "../dialogs/confirmation-dialog";
@@ -48,7 +56,7 @@ export default function ProfileBlogsList({ auth_id }: { auth_id: string }) {
       {error && <p className="text-red p-4">{error}</p>}
       {loading ? (
         <BlogListSkeleton />
-      ) : (
+      ) : blogs.length > 0 ? (
         <div className="flex flex-col gap-2">
           <PaginationBar total={total} size={limit} page={page} />
           <div className="flex flex-col gap-2">
@@ -56,6 +64,22 @@ export default function ProfileBlogsList({ auth_id }: { auth_id: string }) {
               <ProfileBlogItem auth_id={auth_id} key={blog.id} blog={blog} />
             ))}
           </div>
+        </div>
+      ) : (
+        <div className="border h-96 p-10 flex justify-center items-center flex-col gap-4 w-full bg-secondary rounded-lg">
+          <BookOpenText className="stroke-muted-foreground size-32" />
+          <h1 className="text-center text-muted-foreground">
+            You haven't posted anything yet.
+          </h1>
+          <Link
+            href="/profile/blog-create"
+            className={buttonVariants({
+              variant: "outline",
+              size: "lg",
+            })}
+          >
+            <PenBox /> Write you first post
+          </Link>
         </div>
       )}
     </div>
