@@ -8,8 +8,14 @@ import {
 } from "@/lib/blogs/blogs-slice";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Spinner } from "./ui/spinner";
+import { Blog } from "@/lib/types/blog";
+import { renderToHTMLString } from "@tiptap/static-renderer/pm/html-string";
+import StarterKit from "@tiptap/starter-kit";
+import { truncateString } from "@/lib/string-utils";
+import dayjs from "dayjs";
+import { DATE_FORMAT_TEMPLATE } from "@/lib/constants";
 
 export default function BlogsList() {
   const dispatch = useAppDispatch();
@@ -47,16 +53,52 @@ export default function BlogsList() {
           <Spinner /> <div>Loading...</div>
         </div>
       )}
-      {!loading &&
-        blogs.map((blog) => (
-          <Link
-            href={"/blogs/" + blog.slug}
-            key={blog.slug}
-            className="border w-full p-2 rounded-md"
-          >
-            {blog.title}
-          </Link>
-        ))}
+      {!loading && (
+        <div className="grid grid-cols-2 gap-2">
+          {blogs.map((blog) => (
+            <BlogListItem blog={blog} key={blog.slug} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const BODY_PREVIEW_LIMIT = 250;
+
+function BlogListItem({ blog }: { blog: Blog }) {
+  const blogBody = useMemo(() => {
+    const html = renderToHTMLString({
+      extensions: [StarterKit],
+      content: blog.body,
+    });
+
+    return truncateString(html, BODY_PREVIEW_LIMIT);
+  }, [blog.body]);
+  const displayTitle = useMemo(
+    () => truncateString(blog.title, 50),
+    [blog.title],
+  );
+  return (
+    <div className="w-full border hover:bg-secondary/90 p-2 rounded-md h-60 flex flex-col justify-between">
+      <div className="flex flex-col gap-1">
+        <Link
+          href={"/blogs/" + blog.slug}
+          className="text-xl font-bold hover:underline underline-offset-4 "
+        >
+          {displayTitle}
+        </Link>
+        <p className="text-sm">
+          by <span className="font-bold">{blog.author.username}</span> |{" "}
+          {blog.published_at && (
+            <span>{dayjs(blog.published_at).format(DATE_FORMAT_TEMPLATE)}</span>
+          )}
+        </p>
+      </div>
+      <div
+        className="text-muted-foreground text-sm h-[135px]"
+        dangerouslySetInnerHTML={{ __html: blogBody }}
+      />
     </div>
   );
 }

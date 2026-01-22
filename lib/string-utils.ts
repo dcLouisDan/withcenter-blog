@@ -15,3 +15,8 @@ export function titleToSlug(str: string): string {
     .map((word) => word.toLowerCase())
     .join("-");
 }
+
+export function truncateString(str: string, limit: number): string {
+  if (str.length <= limit) return str;
+  return str.slice(0, limit).trim() + "...";
+}

@@ -19,3 +19,5 @@ export const INITIAL_TIPTAP_CONTENT: Record<string, any> = {
 };
 
 export const DATE_FORMAT_TEMPLATE = "MMMM DD, YYYY";
+
+export const PER_PAGE_DEFAULT = 10;
