@@ -1,19 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Spinner } from "../ui/spinner";
 import { Blog } from "@/lib/types/blog";
 import dayjs from "dayjs";
 import { DATE_FORMAT_TEMPLATE } from "@/lib/constants";
 import { Button, buttonVariants } from "../ui/button";
-import { Archive, ArchiveRestore, Book, Edit } from "lucide-react";
+import { Archive, ArchiveRestore, Book, Edit, Trash2 } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";
 import { ConfirmationDialog } from "../dialogs/confirmation-dialog";
 import { toast } from "sonner";
 import useProfileBlogList from "@/hooks/use-profile-blog-list";
-import { archiveBlog, publishBlog, unarchiveBlog } from "@/lib/supabase/blogs";
+import {
+  archiveBlog,
+  deleteBlog,
+  publishBlog,
+  unarchiveBlog,
+} from "@/lib/supabase/blogs";
+import { PaginationBar } from "../pagination-bar";
+import { renderToHTMLString } from "@tiptap/static-renderer/pm/html-string";
+import StarterKit from "@tiptap/starter-kit";
+import { truncateString } from "@/lib/string-utils";
 
 export default function ProfileBlogsList({ auth_id }: { auth_id: string }) {
   const {
@@ -25,6 +34,7 @@ export default function ProfileBlogsList({ auth_id }: { auth_id: string }) {
     limit,
     sort,
     sort_direction,
+    total,
   } = useProfileBlogList(auth_id);
 
   useEffect(() => {
@@ -33,17 +43,23 @@ export default function ProfileBlogsList({ auth_id }: { auth_id: string }) {
   }, [auth_id, page, limit, sort, sort_direction]);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div>
       {error && <p className="text-red p-4">{error}</p>}
       {loading && (
         <div className="flex items-center justify-center gap-4">
           <Spinner /> <div>Loading...</div>
         </div>
       )}
-      {!loading &&
-        blogs.map((blog) => (
-          <ProfileBlogItem auth_id={auth_id} key={blog.id} blog={blog} />
-        ))}
+      {!loading && (
+        <div className="flex flex-col gap-2">
+          <PaginationBar total={total} size={limit} />
+          <div className="flex flex-col gap-2">
+            {blogs.map((blog) => (
+              <ProfileBlogItem auth_id={auth_id} key={blog.id} blog={blog} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -61,7 +77,11 @@ function ProfileBlogItem({ blog, auth_id }: { blog: Blog; auth_id: string }) {
   return (
     <div className="w-full border flex items-center gap-2 rounded-lg p-2 px-4">
       <div className="flex flex-col gap-1 flex-1">
-        <Link href={"/blogs/" + blog.slug} key={blog.slug} className="">
+        <Link
+          href={"/blogs/" + blog.slug}
+          key={blog.slug}
+          className="hover:underline underline-offset-4"
+        >
           {blog.title}
         </Link>
         <p className="text-xs text-muted-foreground">
@@ -71,7 +91,7 @@ function ProfileBlogItem({ blog, auth_id }: { blog: Blog; auth_id: string }) {
         <div className="flex items-center gap-2">{statusBadge}</div>
       </div>
       <Separator orientation="vertical" />
-      <div className="flex flex-col w-40 h-full gap-2">
+      <div className="flex flex-col w-50 h-full gap-2">
         {!blog.published_at && !blog.archived_at ? (
           <PublishBlogDialog auth_id={auth_id} blog={blog} />
         ) : !blog.archived_at ? (
@@ -79,16 +99,19 @@ function ProfileBlogItem({ blog, auth_id }: { blog: Blog; auth_id: string }) {
         ) : (
           <UnarchiveBlogDialog auth_id={auth_id} blog={blog} />
         )}
-        <Link
-          href={"/blogs/edit/" + blog.slug}
-          className={buttonVariants({
-            className: "w-full",
-            size: "sm",
-            variant: "secondary",
-          })}
-        >
-          <Edit /> Edit
-        </Link>
+        <div className="flex items-center gap-1">
+          <Link
+            href={"/blogs/edit/" + blog.slug}
+            className={buttonVariants({
+              className: "w-20",
+              size: "sm",
+              variant: "secondary",
+            })}
+          >
+            <Edit /> Edit
+          </Link>
+          <DeleteBlogDialog blog={blog} auth_id={auth_id} />
+        </div>
       </div>
     </div>
   );
@@ -97,7 +120,7 @@ function ProfileBlogItem({ blog, auth_id }: { blog: Blog; auth_id: string }) {
 function PublishBlogDialog({ blog, auth_id }: { blog: Blog; auth_id: string }) {
   const { refreshData } = useProfileBlogList(auth_id);
   const [isLoading, setIsLoading] = useState(false);
-  const handlePublish = async () => {
+  const handleSubmit = async () => {
     setIsLoading(true);
     try {
       const { error } = await publishBlog(blog.id);
@@ -119,7 +142,7 @@ function PublishBlogDialog({ blog, auth_id }: { blog: Blog; auth_id: string }) {
           {isLoading ? <Spinner /> : <Book />} Publish
         </Button>
       }
-      onSubmit={handlePublish}
+      onSubmit={handleSubmit}
     />
   );
 }
@@ -127,7 +150,7 @@ function PublishBlogDialog({ blog, auth_id }: { blog: Blog; auth_id: string }) {
 function ArchiveBlogDialog({ blog, auth_id }: { blog: Blog; auth_id: string }) {
   const { refreshData } = useProfileBlogList(auth_id);
   const [isLoading, setIsLoading] = useState(false);
-  const handlePublish = async () => {
+  const handleSubmit = async () => {
     setIsLoading(true);
     try {
       const { error } = await archiveBlog(blog.id);
@@ -149,7 +172,7 @@ function ArchiveBlogDialog({ blog, auth_id }: { blog: Blog; auth_id: string }) {
           {isLoading ? <Spinner /> : <Archive />} Archive
         </Button>
       }
-      onSubmit={handlePublish}
+      onSubmit={handleSubmit}
     />
   );
 }
@@ -163,7 +186,7 @@ function UnarchiveBlogDialog({
 }) {
   const { refreshData } = useProfileBlogList(auth_id);
   const [isLoading, setIsLoading] = useState(false);
-  const handlePublish = async () => {
+  const handleSubmit = async () => {
     setIsLoading(true);
     try {
       const { error } = await unarchiveBlog(blog.id);
@@ -185,7 +208,66 @@ function UnarchiveBlogDialog({
           {isLoading ? <Spinner /> : <ArchiveRestore />} Unarchive
         </Button>
       }
-      onSubmit={handlePublish}
+      onSubmit={handleSubmit}
     />
+  );
+}
+
+function DeleteBlogDialog({ blog, auth_id }: { blog: Blog; auth_id: string }) {
+  const { refreshData } = useProfileBlogList(auth_id);
+  const [isLoading, setIsLoading] = useState(false);
+  const BODY_PREVIEW_LIMIT = 250;
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    try {
+      const { error } = await deleteBlog(blog.id);
+      if (error) throw error;
+      toast.success("Blog Deleted!");
+      refreshData();
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : "An error occurred");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const blogBody = useMemo(() => {
+    const html = renderToHTMLString({
+      extensions: [StarterKit],
+      content: blog.body,
+    });
+
+    return truncateString(html, BODY_PREVIEW_LIMIT);
+  }, [blog.body]);
+  const displayTitle = useMemo(
+    () => truncateString(blog.title, 50),
+    [blog.title],
+  );
+
+  return (
+    <ConfirmationDialog
+      title="Delete Blog"
+      description={
+        "By pressing continue, your blog will be deleted permanently. This action cannot be undone."
+      }
+      triggerComponent={
+        <Button size="sm" disabled={isLoading} variant="destructive">
+          {isLoading ? <Spinner /> : <Trash2 />} Delete
+        </Button>
+      }
+      submitButtonVariant={{ variant: "destructive" }}
+      submitButtonContent="Delete"
+      onSubmit={handleSubmit}
+    >
+      <div className="w-full flex flex-col gap-2 border p-2 rounded-md">
+        <div className="flex flex-col gap-1">
+          <div className=" font-bold">{displayTitle}</div>
+        </div>
+        <div
+          className="text-muted-foreground text-sm"
+          dangerouslySetInnerHTML={{ __html: blogBody }}
+        />
+      </div>
+    </ConfirmationDialog>
   );
 }

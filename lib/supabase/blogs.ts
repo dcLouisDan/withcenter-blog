@@ -50,6 +50,11 @@ export async function unarchiveBlog(id: string) {
     .eq("id", id);
 }
 
+export async function deleteBlog(id: string) {
+  const supabase = createClient();
+  return supabase.from("blogs").delete().eq("id", id);
+}
+
 export const fetchPaginatedBlogs = cache(
   async (params?: BlogsFetchParams): Promise<BlogsFetchResponse> => {
     const supabase = createClient();

@@ -25,6 +25,7 @@ interface ConfirmationDialogProps {
   submitButtonContent?: ReactNode;
   submitButtonVariant?: ButtonVariantTypes;
   onSubmit?: () => void;
+  children?: ReactNode;
 }
 
 export function ConfirmationDialog({
@@ -34,6 +35,7 @@ export function ConfirmationDialog({
   submitButtonContent = "Continue",
   submitButtonVariant = { variant: "default" },
   onSubmit = () => {},
+  children,
 }: ConfirmationDialogProps) {
   return (
     <AlertDialog>
@@ -43,6 +45,7 @@ export function ConfirmationDialog({
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
+        {children}
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction

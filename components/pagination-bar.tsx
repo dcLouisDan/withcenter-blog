@@ -14,14 +14,17 @@ import { PER_PAGE_DEFAULT } from "@/lib/constants";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
 
-export function PaginationBar({ total = 0 }: { total?: number }) {
+export function PaginationBar({
+  total = 0,
+  page = 1,
+  size = PER_PAGE_DEFAULT,
+}: {
+  total?: number;
+  page?: number;
+  size?: number;
+}) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  const page = searchParams.get("page") ? Number(searchParams.get("page")) : 1;
-  const size = searchParams.get("perPage")
-    ? Number(searchParams.get("perPage"))
-    : PER_PAGE_DEFAULT;
 
   const createQueryString = useCallback(
     (name: string, value: string) => {

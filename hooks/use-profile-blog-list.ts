@@ -6,7 +6,9 @@ import {
   selectIsLoading,
   selectPagination,
 } from "@/lib/blogs/blogs-slice";
+import { PER_PAGE_DEFAULT } from "@/lib/constants";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 export default function useProfileBlogList(auth_id: string) {
   const dispatch = useAppDispatch();
@@ -14,7 +16,13 @@ export default function useProfileBlogList(auth_id: string) {
   const blogs = useAppSelector(selectBlogs);
   const error = useAppSelector(selectError);
   const pagination = useAppSelector(selectPagination);
-  const { page, limit, sort, sort_direction } = pagination;
+  const { sort, sort_direction, total } = pagination;
+  const searchParams = useSearchParams();
+
+  const page = searchParams.get("page") ? Number(searchParams.get("page")) : 1;
+  const limit = searchParams.get("perPage")
+    ? Number(searchParams.get("perPage"))
+    : PER_PAGE_DEFAULT;
 
   const refreshData = useCallback(() => {
     dispatch(
@@ -26,14 +34,7 @@ export default function useProfileBlogList(auth_id: string) {
         sort_direction,
       }),
     );
-  }, [
-    auth_id,
-    pagination.page,
-    pagination.limit,
-    pagination.total,
-    pagination.sort,
-    pagination.sort_direction,
-  ]);
+  }, [auth_id, page, limit, total, sort, sort_direction]);
 
   return {
     refreshData,
@@ -41,6 +42,7 @@ export default function useProfileBlogList(auth_id: string) {
     blogs,
     error,
     page,
+    total,
     limit,
     sort,
     sort_direction,
