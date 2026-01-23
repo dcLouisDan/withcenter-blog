@@ -9,6 +9,9 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { snakeCaseToTitleCase } from "@/lib/string-utils";
 import { UserDataForm } from "@/lib/types/user";
+import { useAppDispatch } from "@/lib/hooks";
+import { fetchProfile } from "@/lib/user-profile/user-profile-slice";
+import { useRouter } from "next/navigation";
 
 export default function UserDetailsForm({
   onSubmitSuccess,
@@ -24,6 +27,8 @@ export default function UserDetailsForm({
     first_name: "",
     last_name: "",
   });
+  const dispatch = useAppDispatch();
+  const router = useRouter();
 
   const setDataValue = (key: keyof UserDataForm, value: string) => {
     setData((prev) => ({
@@ -42,6 +47,9 @@ export default function UserDetailsForm({
       const { error } = await supabase.from("profiles").insert(data);
       if (error) throw error;
       if (onSubmitSuccess) onSubmitSuccess();
+
+      dispatch(fetchProfile());
+      router.refresh();
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {

@@ -35,7 +35,7 @@ export default function BlogCommentItem({ comment }: { comment: BlogComment }) {
 
 function DeleteBlogComment({ comment }: { comment: BlogComment }) {
   const [isLoading, setIsLoading] = useState(false);
-  const { refreshData } = useBlogCommentsList();
+  const { refreshData } = useBlogCommentsList(comment.blog_id);
   const handleSubmit = async () => {
     setIsLoading(true);
     try {

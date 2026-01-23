@@ -17,7 +17,7 @@ export default async function BlogComments({ slug }: { slug: string }) {
         <BlogCommentCount />
       </div>
       {user ? (
-        <BlogCommentForm user_id={blog.author.id} blog_id={blog.id} />
+        <BlogCommentForm blog_id={blog.id} />
       ) : (
         <div className="py-4 text-center text-sm text-muted-foreground">
           <Link
@@ -30,7 +30,7 @@ export default async function BlogComments({ slug }: { slug: string }) {
         </div>
       )}
       <Separator />
-      <BlogCommentsList blog_id={blog.id} user_id={blog.author.id} />
+      <BlogCommentsList blog_id={blog.id} />
     </div>
   );
 }

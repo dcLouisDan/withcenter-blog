@@ -55,7 +55,7 @@ export function PaginationBar({
         createQueryString([{ name: "page", value: page.toString() }])
       );
     },
-    [pathname],
+    [pathname, searchParams],
   );
 
   const handlePageSizeChange = (value: string) => {
@@ -74,6 +74,7 @@ export function PaginationBar({
       ]);
 
     router.push(queryString);
+    router.refresh();
   };
 
   const { pages, isFirstPage, isLastPage, nextPage, prevPage, lastPage } =

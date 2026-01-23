@@ -8,7 +8,6 @@ import { Highlight } from "@tiptap/extension-highlight";
 import { Subscript } from "@tiptap/extension-subscript";
 import { Superscript } from "@tiptap/extension-superscript";
 import { Selection } from "@tiptap/extensions";
-import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import { SortDirection } from "./types/blog";
 
 export const fontLogo = DM_Serif_Text({

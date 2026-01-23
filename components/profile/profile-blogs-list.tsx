@@ -111,7 +111,7 @@ function ProfileBlogItem({ blog, auth_id }: { blog: Blog; auth_id: string }) {
     );
   console.log(`${blog.title} - Archived : ${blog.archived_at}`);
   return (
-    <div className="w-full border flex flex-col sm:flex-row items-center gap-1 sm:gap-2 rounded-lg p-2 px-4">
+    <div className="w-full border flex flex-col sm:flex-row items-center gap-1 sm:gap-2 rounded-lg p-2">
       <div className="flex flex-col gap-1 flex-1 w-full">
         <Link
           href={"/blogs/" + blog.slug}

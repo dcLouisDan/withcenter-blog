@@ -1,5 +1,5 @@
 "use client";
-import { MessageSquare } from "lucide-react";
+import { Image, MessageSquare, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import React, { useRef, useState } from "react";
@@ -7,17 +7,14 @@ import { postComment } from "@/lib/supabase/blog-comments";
 import { toast } from "sonner";
 import { Spinner } from "./ui/spinner";
 import { Input } from "./ui/input";
-import useBlogList from "@/hooks/use-blog-list";
 import useBlogCommentsList from "@/hooks/use-blog-comments";
+import { useAppSelector } from "@/lib/hooks";
+import { selectAuthId } from "@/lib/user-profile/user-profile-slice";
+import ImageDisplayWithPreview from "./image-display-with-preview";
 
-export default function BlogCommentForm({
-  user_id,
-  blog_id,
-}: {
-  user_id?: string;
-  blog_id: string;
-}) {
-  const { refreshData } = useBlogCommentsList();
+export default function BlogCommentForm({ blog_id }: { blog_id: string }) {
+  const user_id = useAppSelector(selectAuthId);
+  const { refreshData } = useBlogCommentsList(blog_id);
   const [isLoading, setIsLoading] = useState(false);
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | undefined>();
@@ -25,6 +22,11 @@ export default function BlogCommentForm({
     e.preventDefault();
     if (!user_id) return;
     setIsLoading(true);
+    if (content == "") {
+      toast.error("Oops! your comment was blank!");
+      setIsLoading(false);
+      return;
+    }
     try {
       await postComment(user_id, blog_id, content, image);
 
@@ -50,23 +52,13 @@ export default function BlogCommentForm({
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
-        <div className="flex justify-end items-center gap-4">
-          <Input
-            type="file"
-            accept="image/*"
-            placeholder="Select Image"
-            onChange={(e) => {
-              const files = e.target.files;
-              if (files && files.length > 0) {
-                setImage(files[0]);
-              }
-            }}
-          />
+        <div className="flex justify-end items-center gap-2">
+          <CommentImageInput image={image} setImage={setImage} />
           <Button
             size="sm"
             type="submit"
             disabled={isLoading}
-            variant="outline"
+            variant="default"
           >
             {isLoading ? <Spinner /> : <MessageSquare />}
             Post
@@ -74,5 +66,74 @@ export default function BlogCommentForm({
         </div>
       </div>
     </form>
+  );
+}
+
+function CommentImageInput({
+  image,
+  setImage,
+}: {
+  image?: File;
+  setImage: (file: File | undefined) => void;
+}) {
+  const [preview, setPreview] = useState<string | undefined>();
+  const ref = useRef<HTMLInputElement>(null);
+  const onInputClick = () => {
+    if (ref.current) {
+      ref.current.click();
+    }
+  };
+  return (
+    <div>
+      {image && preview && (
+        <div className="flex items-center border rounded p-1 gap-1 bg-background">
+          <ImageDisplayWithPreview
+            className="size-12 rounded overflow-hidden"
+            src={preview}
+          />
+          <button
+            type="button"
+            className="size-6 flex items-center border rounded"
+            onClick={() => {
+              setImage(undefined);
+              setPreview(undefined);
+            }}
+          >
+            <X className="w-full" />
+          </button>
+        </div>
+      )}
+      {!image && (
+        <Button
+          onClick={onInputClick}
+          type="button"
+          size="sm"
+          variant="outline"
+        >
+          <Image /> Attach Image
+        </Button>
+      )}
+      <Input
+        key={image ? image?.name : "input"}
+        type="file"
+        accept="image/*"
+        placeholder="Select Image"
+        ref={ref}
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          setImage(file);
+
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            setPreview(event.target?.result as string);
+          };
+
+          if (file) {
+            reader.readAsDataURL(file as Blob);
+          }
+        }}
+      />
+    </div>
   );
 }

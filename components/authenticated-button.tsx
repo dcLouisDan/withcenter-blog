@@ -15,32 +15,44 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { JwtPayload } from "@supabase/supabase-js";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { fetchProfile } from "@/lib/user-profile/user-profile-slice";
+import {
+  fetchProfile,
+  selectProfile,
+} from "@/lib/user-profile/user-profile-slice";
+import { cn } from "@/lib/utils";
+import { useSelector } from "react-redux";
 
 export default function AuthenticatedButton({ user }: { user: JwtPayload }) {
   const dispatch = useAppDispatch();
+  const profile = useSelector(selectProfile);
   useEffect(() => {
     dispatch(fetchProfile());
   }, [user]);
   return (
     <>
       <div className="hidden sm:flex items-center gap-4">
+        {profile && <div>Hello, {profile.username}!</div>}
         <Link href="/profile" className={buttonVariants({ variant: "link" })}>
-          Profile
+          My Profile
         </Link>
         <LogoutButton />
       </div>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon" className="sm:hidden">
-            <Menu />
-          </Button>
+        <DropdownMenuTrigger
+          className={cn(
+            buttonVariants({ size: "icon", variant: "outline" }),
+            "sm:hidden",
+          )}
+        >
+          <Menu />
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuGroup>
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>
+              {profile ? profile.username : "My Account"}
+            </DropdownMenuLabel>
             <DropdownMenuItem asChild>
-              <Link href="/profile">Profile</Link>
+              <Link href="/profile">My Profile</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>

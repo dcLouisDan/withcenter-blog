@@ -6,12 +6,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
-export default function ImageDisplayWithPreview({ src }: { src: string }) {
+export default function ImageDisplayWithPreview({
+  src,
+  className,
+}: {
+  src: string;
+  className?: string;
+}) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="size-20 bg-secondary border mx-auto">
+        <button
+          className={cn("size-20 bg-secondary border mx-auto", className)}
+        >
           <img src={src} className="object-cover" />
         </button>
       </DialogTrigger>
