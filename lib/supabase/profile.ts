@@ -24,3 +24,14 @@ export async function getUserProfile(): Promise<null | UserProfile> {
   const profile = data[0] as UserProfile;
   return { ...profile, id };
 }
+
+export async function isAuthenticated() {
+  const supabase = await createClient();
+
+  // You can also use getUser() which will be slower.
+  const { data } = await supabase.auth.getClaims();
+
+  const user = data?.claims;
+
+  return user;
+}
