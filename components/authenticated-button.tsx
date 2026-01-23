@@ -14,7 +14,7 @@ import { LogoutButton } from "./logout-button";
 import Link from "next/link";
 import { useEffect } from "react";
 import { JwtPayload } from "@supabase/supabase-js";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { useAppDispatch } from "@/lib/hooks";
 import {
   fetchProfile,
   selectProfile,
@@ -38,13 +38,10 @@ export default function AuthenticatedButton({ user }: { user: JwtPayload }) {
         <LogoutButton />
       </div>
       <DropdownMenu>
-        <DropdownMenuTrigger
-          className={cn(
-            buttonVariants({ size: "icon", variant: "outline" }),
-            "sm:hidden",
-          )}
-        >
-          <Menu />
+        <DropdownMenuTrigger asChild>
+          <Button className="sm:hidden" size="icon" variant="outline">
+            <Menu />
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuGroup>

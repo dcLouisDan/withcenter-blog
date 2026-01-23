@@ -45,9 +45,18 @@ export default function useBlogList(
         sort,
         sort_direction,
         published: !auth_id,
+        archived: customParams?.archived,
       }),
     );
-  }, [auth_id, page, limit, total, sort, sort_direction]);
+  }, [
+    auth_id,
+    page,
+    limit,
+    total,
+    sort,
+    sort_direction,
+    customParams?.archived,
+  ]);
 
   return {
     refreshData,

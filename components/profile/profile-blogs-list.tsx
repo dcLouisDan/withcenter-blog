@@ -47,7 +47,11 @@ export default function ProfileBlogsList({ auth_id }: { auth_id: string }) {
     sort,
     sort_direction,
     total,
-  } = useBlogList(auth_id);
+  } = useBlogList(auth_id, {
+    archived: true,
+    published: true,
+    unpublished: true,
+  });
 
   useEffect(() => {
     console.log("Fetching");
@@ -154,7 +158,11 @@ function ProfileBlogItem({ blog, auth_id }: { blog: Blog; auth_id: string }) {
 }
 
 function PublishBlogDialog({ blog, auth_id }: { blog: Blog; auth_id: string }) {
-  const { refreshData } = useBlogList(auth_id);
+  const { refreshData } = useBlogList(auth_id, {
+    archived: true,
+    published: true,
+    unpublished: true,
+  });
   const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -184,7 +192,11 @@ function PublishBlogDialog({ blog, auth_id }: { blog: Blog; auth_id: string }) {
 }
 
 function ArchiveBlogDialog({ blog, auth_id }: { blog: Blog; auth_id: string }) {
-  const { refreshData } = useBlogList(auth_id);
+  const { refreshData } = useBlogList(auth_id, {
+    archived: true,
+    published: true,
+    unpublished: true,
+  });
   const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -225,7 +237,11 @@ function UnarchiveBlogDialog({
   blog: Blog;
   auth_id: string;
 }) {
-  const { refreshData } = useBlogList(auth_id);
+  const { refreshData } = useBlogList(auth_id, {
+    archived: true,
+    published: true,
+    unpublished: true,
+  });
   const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -260,7 +276,11 @@ function UnarchiveBlogDialog({
 }
 
 function DeleteBlogDialog({ blog, auth_id }: { blog: Blog; auth_id: string }) {
-  const { refreshData } = useBlogList(auth_id);
+  const { refreshData } = useBlogList(auth_id, {
+    archived: true,
+    published: true,
+    unpublished: true,
+  });
   const [isLoading, setIsLoading] = useState(false);
   const BODY_PREVIEW_LIMIT = 250;
   const handleSubmit = async () => {

@@ -83,16 +83,16 @@ export const fetchPaginatedBlogs = cache(
       query.order(sort, { ascending: sort_direction === "asc" });
     }
 
+    if (!archived) {
+      query.is("archived_at", null);
+    }
+
     if (published) {
       query.not("published_at", "is", null);
     }
 
     if (unpublished) {
       query.is("published_at", null);
-    }
-
-    if (archived) {
-      query.neq("archived_at", null);
     }
 
     const limit = size ?? 10;
