@@ -9,6 +9,7 @@ import { Subscript } from "@tiptap/extension-subscript";
 import { Superscript } from "@tiptap/extension-superscript";
 import { Selection } from "@tiptap/extensions";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
+import { SortDirection } from "./types/blog";
 
 export const fontLogo = DM_Serif_Text({
   variable: "--font-logo",
@@ -44,16 +45,16 @@ export const INITIAL_TIPTAP_CONTENT: Record<string, any> = {
 export const DATE_FORMAT_TEMPLATE = "MMMM DD, YYYY | hh:mm A";
 
 export const PER_PAGE_DEFAULT = 10;
+export const SORT_DEFAULT = "created_at";
+export const SORT_DIRECTION_DEFAULT: SortDirection = "desc";
 
 export const TIPTAP_STATIC_RENDERER_EXTENSTIONS = [
   StarterKit,
   Image,
-  HorizontalRule,
   TextAlign,
   TaskList,
   TaskItem,
   Highlight,
-  Image,
   Typography,
   Superscript,
   Subscript,

@@ -37,7 +37,6 @@ export default function BlogsList({
   } = useBlogList(undefined, customParams);
 
   useEffect(() => {
-    console.log("Fetching");
     refreshData();
   }, [page, limit, sort, sort_direction]);
 

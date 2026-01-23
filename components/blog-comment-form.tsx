@@ -7,6 +7,8 @@ import { postComment } from "@/lib/supabase/blog-comments";
 import { toast } from "sonner";
 import { Spinner } from "./ui/spinner";
 import { Input } from "./ui/input";
+import useBlogList from "@/hooks/use-blog-list";
+import useBlogCommentsList from "@/hooks/user-blog-comments";
 
 export default function BlogCommentForm({
   user_id,
@@ -15,6 +17,7 @@ export default function BlogCommentForm({
   user_id?: string;
   blog_id: string;
 }) {
+  const { refreshData } = useBlogCommentsList();
   const [isLoading, setIsLoading] = useState(false);
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | undefined>();
@@ -28,6 +31,7 @@ export default function BlogCommentForm({
       toast.success("Comment Posted!");
       setContent("");
       setImage(undefined);
+      refreshData();
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "An error occurred";
