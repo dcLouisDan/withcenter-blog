@@ -1,6 +1,6 @@
 "use client";
 
-import useBlogCommentsList from "@/hooks/user-blog-comments";
+import useBlogCommentsList from "@/hooks/use-blog-comments";
 import { Badge } from "./ui/badge";
 
 export default function BlogCommentCount() {

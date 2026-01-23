@@ -11,7 +11,7 @@ import { Spinner } from "./ui/spinner";
 import { toast } from "sonner";
 import { deleteBlogComment } from "@/lib/supabase/blog-comments";
 import { useState } from "react";
-import useBlogCommentsList from "@/hooks/user-blog-comments";
+import useBlogCommentsList from "@/hooks/use-blog-comments";
 
 export default function BlogCommentItem({ comment }: { comment: BlogComment }) {
   const authId = useAppSelector(selectAuthId);

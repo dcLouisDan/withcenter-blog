@@ -3,6 +3,7 @@ import {
   fetchBlogComments,
   selectBlogComments,
   selectError,
+  selectIsLoading,
   selectPagination,
   selectTotal,
 } from "@/lib/blogs/blog-comments-slice";
@@ -19,6 +20,7 @@ export default function useBlogCommentsList(
   const error = useAppSelector(selectError);
   const total = useAppSelector(selectTotal);
   const pagination = useAppSelector(selectPagination);
+  const isLoading = useAppSelector(selectIsLoading);
 
   const { page, limit, sort, sort_direction } = pagination;
 
@@ -36,6 +38,7 @@ export default function useBlogCommentsList(
   }, [page, limit, sort, sort_direction]);
 
   return {
+    isLoading,
     comments,
     error,
     total,

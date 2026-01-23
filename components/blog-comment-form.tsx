@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Spinner } from "./ui/spinner";
 import { Input } from "./ui/input";
 import useBlogList from "@/hooks/use-blog-list";
-import useBlogCommentsList from "@/hooks/user-blog-comments";
+import useBlogCommentsList from "@/hooks/use-blog-comments";
 
 export default function BlogCommentForm({
   user_id,
